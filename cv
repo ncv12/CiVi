@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy Học Sinh</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #e3f2fd; padding: 20px; }
+        .box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 80%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; }
+        button { width: 85%; padding: 15px; background: #2196f3; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; }
+        .meter { height: 10px; background: #eee; margin: 10px 0; border-radius: 5px; overflow: hidden; }
+        .bar { height: 100%; width: 0%; transition: 0.3s; }
+    </style>
+</head>
+<body>
+
+<div class="box" id="regForm">
+    <h2>📝 Đăng Ký & Tạo Thư Mục</h2>
+    <input type="text" id="hsName" placeholder="Tên của em (VD: Lan)">
+    <input type="password" id="hsPass" placeholder="Mật khẩu an toàn" oninput="check(this.value)">
+    <div class="meter"><div id="bar" class="bar"></div></div>
+    <input type="text" id="folderName" placeholder="Tên thư mục muốn tạo">
+    <button onclick="sendData()">Gửi lên màn hình Thầy/Cô</button>
+</div>
+
+<script>
+    // DÁN FIREBASE CONFIG CỦA BẠN VÀO ĐÂY
+    const firebaseConfig = {
+        apiKey: "AIza...",
+        authDomain: "...",
+        databaseURL: "...",
+        projectId: "...",
+        storageBucket: "...",
+        messagingSenderId: "...",
+        appId: "..."
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function check(p) {
+        let b = document.getElementById('bar');
+        b.style.width = p.length * 10 + "%";
+        b.style.backgroundColor = p.length < 6 ? "red" : (p.length < 10 ? "orange" : "green");
+    }
+
+    function sendData() {
+        const name = document.getElementById('hsName').value;
+        const folder = document.getElementById('folderName').value;
+        const pass = document.getElementById('hsPass').value;
+
+        if(!name || !folder || pass.length < 1) return alert("Em điền thiếu rồi!");
+
+        db.ref('class_folders').push({
+            student: name,
+            folder: folder,
+            time: new Date().toLocaleTimeString()
+        }).then(() => {
+            alert("Đã gửi thành công! Hãy nhìn lên màn hình lớn nhé.");
+            document.getElementById('folderName').value = "";
+        });
+    }
+</script>
+</body>
+</html>
